@@ -2,8 +2,12 @@
 name = "slagalica"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "MIT OR Apache-2.0"
+description = "An exhaustive program for resolving a problem on Serbian TV"
+homepage = "https://github.com/MathieuDutSik/slagalica"
+repository = "https://github.com/MathieuDutSik/slagalica"
+readme = "README.md"
+keywords = ["gmp"]
 
 [dependencies]
 rug = "1.15.0"
