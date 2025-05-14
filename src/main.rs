@@ -1,10 +1,12 @@
 extern crate rug;
 use crate::rug::Assign;
 use substring::Substring;
+use rug::Rational;
+
 
 #[derive(Clone, Debug)]
 struct Typ {
-    val: rug::Rational,
+    val: Rational,
     str: String,
 }
 
@@ -37,7 +39,7 @@ fn op_div(x: &Typ, y: &Typ) -> Typ {
 }
 
 fn compute_all_operations(x: &Typ, y: &Typ) -> Vec<Typ> {
-    let mut v_ret = vec![op_plus(x, y), op_prod(x, y), op_minus(x, y), op_minus(x, y)];
+    let mut v_ret = vec![op_plus(x, y), op_prod(x, y), op_minus(x, y), op_minus(y, x)];
     if y.val != 0 {
         v_ret.push(op_div(x, y))
     }
@@ -63,7 +65,6 @@ fn spann_all_expression(l_val: Vec<Typ>) -> Vec<Vec<Typ>> {
                 for x_m in l_merge {
                     let mut l_ent = l_concat.clone();
                     l_ent.push(x_m);
-                    //                    println!("l_ent={:?}", l_ent);
                     l_ret.push(l_ent);
                 }
             }
@@ -72,7 +73,7 @@ fn spann_all_expression(l_val: Vec<Typ>) -> Vec<Vec<Typ>> {
     l_ret
 }
 
-fn test_solution(l_val: &Vec<Typ>, target: &rug::Rational) -> Option<String> {
+fn test_solution(l_val: &Vec<Typ>, target: &Rational) -> Option<String> {
     for e_val in l_val {
         if e_val.val == target.clone() {
             return Some(e_val.str.clone());
@@ -81,7 +82,7 @@ fn test_solution(l_val: &Vec<Typ>, target: &rug::Rational) -> Option<String> {
     None
 }
 
-fn compute_expression(l_val: Vec<Typ>, target: rug::Rational) -> Option<String> {
+fn compute_expression(l_val: Vec<Typ>, target: Rational) -> Option<String> {
     let mut l_ret = Vec::<Vec<Typ>>::new();
     let len = l_val.len();
     l_ret.push(l_val);
@@ -101,19 +102,21 @@ fn compute_expression(l_val: Vec<Typ>, target: rug::Rational) -> Option<String> 
     None
 }
 
-fn get_rational(estr: &str) -> rug::Rational {
+fn get_rational(estr: &str) -> Rational {
     let my_int = estr.parse::<i32>().unwrap();
     let mut num = rug::Integer::new();
     let mut den = rug::Integer::new();
     num.assign(my_int);
     den.assign(1);
-    rug::Rational::from((num, den))
+    Rational::from((num, den))
 }
 
 fn insert_val(l_val: &mut Vec<Typ>, estr: String) {
     let r = get_rational(&estr);
-    let val = Typ { val: r, str: estr };
-    l_val.push(val)
+    if r != 0 {
+        let val = Typ { val: r, str: estr };
+        l_val.push(val);
+    }
 }
 
 fn main() {
@@ -130,6 +133,7 @@ fn main() {
     }
     insert_val(&mut l_val, mid1);
     insert_val(&mut l_val, mid2);
+    println!("l_val = {l_val:?}");
     match compute_expression(l_val, target) {
         Some(estr) => println!("Found expression {}", estr),
         None => println!("No expression found"),
